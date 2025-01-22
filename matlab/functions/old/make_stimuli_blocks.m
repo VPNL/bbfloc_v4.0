@@ -1,0 +1,112 @@
+function make_stimuliblocks(participant)
+% Generates a combined CSV for both dynamic (video) and static (image) blocks
+% 3 reps per category, with random selection of dynamic or static blocks
+% INPUT: 
+% - participant: Participant ID (subject's name)
+
+%% Define general experiment parameters
+addpath(fullfile('/Users', 'ctyagi', 'Desktop', 'bbfloc_2.0', 'matlab', 'functions'));
+
+participant_folder = fullfile('/Users', 'ctyagi', 'Desktop', 'bbfloc_2.0', 'psychopy', 'data', participant);
+
+% Define the stimulus categories for both types (video and image)
+video_cats = {'Faces-D', 'Limbs-D', 'Objects-D', 'Scenes-D'}; % Video stimulus categories
+image_cats = {'Faces-S', 'Limbs-S', 'Cars-S', 'Scenes-S', 'Food-S'}; % Image stimulus categories
+video_dir = fullfile('/Users', 'ctyagi', 'Desktop', 'bbfloc_2.0', 'stimuli', 'saxestim_wfixation_grouped');
+image_dir = fullfile('/Users', 'ctyagi', 'Desktop', 'bbfloc_2.0', 'stimuli', 'updated_static_stimuli');
+
+% Define other parameters for both dynamic and static blocks
+video_dur = 2.6667; % Video stimulus presentation time (secs)
+image_dur = 0.5; % Image stimulus presentation time (secs)
+nreps = 3; % number of blocks per category per run
+nruns = 1; % number of runs
+
+% Number of blocks and trials per run
+nvideo_blocks = length(video_cats) * nreps; % Total video blocks
+nimage_blocks = length(image_cats) * nreps; % Total image blocks
+total_blocks = nvideo_blocks + nimage_blocks; % Total number of blocks
+
+% Create a list of block types (dynamic or static) and categories
+block_types = [repmat({'dynamic'}, 1, nvideo_blocks), repmat({'static'}, 1, nimage_blocks)];
+categories = [repmat(video_cats, 1, nreps), repmat(image_cats, 1, nreps)];
+
+% Randomly shuffle the order of blocks
+block_order = [block_types; categories]';
+block_order = block_order(randperm(size(block_order, 1)), :); % Shuffle blocks
+
+% Ensure no consecutive blocks from the same category
+while any(strcmp(block_order(1:end-1, 2), block_order(2:end, 2))) % Check if consecutive categories are the same
+    block_order = block_order(randperm(size(block_order, 1)), :); % Reshuffle if needed
+end
+
+% Ensure no consecutive blocks from the same group
+group1 = {'Faces-S', 'Limbs-S', 'Faces-D', 'Limbs-D'}; % Group 1 (dynamic and static)
+group2 = {'Cars-S', 'Scenes-S', 'Food-S', 'Cars-D', 'Scenes-D'}; % Group 2 (dynamic and static)
+
+% Define paths for saving the stimuli
+stim_type = 'combined';
+
+%% Create CSV file to store the blocks
+csvfilename = fullfile(participant_folder, 'combined_blocks.csv');
+fid = fopen(csvfilename, 'w');
+if fid == -1
+    error('Failed to open file: %s', csvfilename);
+end
+fprintf(fid, 'Block #,Onset-time(s),Category,TaskMatch,Stim Name,Stim Path,Stim Type,Stim Dur\n');
+
+onset_time = 0; 
+current_block = 1;
+
+% Loop through the block order and generate the CSV for each block
+for i = 1:size(block_order, 1)
+    block_type = block_order{i, 1};
+    category = block_order{i, 2};
+    
+    % Based on block type (dynamic or static), assign the appropriate stimulus
+    if strcmp(block_type, 'dynamic')
+        % Handle dynamic (video) blocks
+        video_stimuli = generate_video_stimuli(category, video_dir, video_dur, 6); % 6 stimuli per block
+        for j = 1:length(video_stimuli)
+            stim_name = video_stimuli{j};
+            stim_path = fullfile(video_dir, stim_name);
+            fprintf(fid, '%i,%f,%s,%s,%s,%s,%s,%f\n', ...
+                current_block, onset_time, category, 'match', stim_name, stim_path, stim_type, video_dur);
+            onset_time = onset_time + video_dur; % Update onset time for next stimulus
+        end
+    elseif strcmp(block_type, 'static')
+        % Handle static (image) blocks
+        image_stimuli = generate_image_stimuli(category, image_dir, image_dur, 32); % 32 stimuli per block
+        for j = 1:length(image_stimuli)
+            stim_name = image_stimuli{j};
+            stim_path = fullfile(image_dir, stim_name);
+            fprintf(fid, '%i,%f,%s,%s,%s,%s,%s,%f\n', ...
+                current_block, onset_time, category, 'match', stim_name, stim_path, stim_type, image_dur);
+            onset_time = onset_time + image_dur; % Update onset time for next stimulus
+        end
+    end
+    
+    % Move to the next block
+    current_block = current_block + 1;
+end
+
+fclose(fid);
+disp(['CSV file written to: ', csvfilename]);
+end
+
+function video_stimuli = generate_video_stimuli(category, stim_dir, stim_dur, num_stimuli)
+% Generate a list of video stimuli for a given category
+stimuli = randperm(num_stimuli); % Random permutation of stimuli
+video_stimuli = cell(1, num_stimuli);
+for i = 1:num_stimuli
+    video_stimuli{i} = strcat(lower(category(1:end-2)), '-', num2str(stimuli(i)), '.mp4');
+end
+end
+
+function image_stimuli = generate_image_stimuli(category, stim_dir, stim_dur, num_stimuli)
+% Generate a list of image stimuli for a given category
+stimuli = randperm(num_stimuli); % Random permutation of stimuli
+image_stimuli = cell(1, num_stimuli);
+for i = 1:num_stimuli
+    image_stimuli{i} = strcat(lower(category(1:end-2)), '-', num2str(stimuli(i)), '.jpg');
+end
+end

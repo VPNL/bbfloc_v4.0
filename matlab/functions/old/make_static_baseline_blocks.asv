@@ -1,0 +1,151 @@
+function write_baseline_blocks(participant)
+%%%%%%%%%%%%%%%%%%%%%%%%%
+% EXPERIMENTAL PARAMETERS
+%%%%%%%%%%%%%%%%%%%%%%%%%
+addpath(fullfile('/Users', 'ctyagi', 'Desktop', 'bbfloc_2.0', 'matlab', 'functions'));
+participant_folder = fullfile('/Users', 'ctyagi', 'Desktop', 'bbfloc_2.0', 'psychopy', 'data', participant);
+stim_dir = fullfile('/Users', 'ctyagi', 'Desktop', 'bbfloc_2.0', 'stimuli', 'saxestim_wfixation_grouped');
+
+% Stimulus categories 
+cats = {'blank'};
+
+% Presentation and design parameters
+nruns = 1; % number of runs
+nreps = 16; % number of blocks per category per run
+stimsperblock = 32; % number of stimuli in a block
+stimdur = 0.5; % stimulus presentation time (secs)
+TR = 2; % fMRI TR (secs)
+propodd = .5;
+
+nblocks = nconds*nreps; % number of blocks in a run
+ntrials = nblocks*stimsperblock; % number of trials in a run
+blockdur = stimsperblock*stimdur; % block duration (sec)
+rundur = nblocks*blockdur; % run duration (sec)
+
+participant_folder = fullfile('/Users', 'ctyagi', 'Desktop', 'bbfloc_2.0', 'psychopy', 'data', participant);
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% GENERATE STIMULUS SEQUENCES
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Trials are grouped into blocks, and each block consists of trials from the same category.
+% The order of blocks within a run is randomized due to the randomization of stimulus categories.
+
+% Create matrix for Block #
+blockmat = zeros(ntrials,nruns);
+for r = 1:nruns
+    blockmat(:,r) = reshape(repmat(1:nblocks,stimsperblock,1),ntrials,1);
+end
+
+% Create matrix for condition (stimulus category); where the randomness
+% component comes from
+condmat = zeros(ntrials,nruns);
+for r = 1:nruns
+    condvec = [randperm(ncats), randperm(ncats), randperm(ncats), randperm(ncats), randperm(ncats), randperm(ncats), randperm(ncats), randperm(ncats), randperm(ncats), randperm(ncats), randperm(ncats), randperm(ncats), randperm(ncats), randperm(ncats), randperm(ncats), randperm(ncats)];
+    % Check for consecutive repetitions of category and reshuffle if found;
+    % ensure each category repeats exactly three times within a run
+    while any(diff(condvec) == 0)
+        condvec = [randperm(ncats), randperm(ncats), randperm(ncats), randperm(ncats), randperm(ncats), randperm(ncats), randperm(ncats), randperm(ncats), randperm(ncats), randperm(ncats), randperm(ncats), randperm(ncats), randperm(ncats), randperm(ncats), randperm(ncats), randperm(ncats)];
+    end
+    
+    condvec = [condvec'];
+    condmat(:, r) = reshape(repmat(condvec', stimsperblock, 1), ntrials, 1);
+ 
+end
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% GENERATE MATRIX FOR IMAGES 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+imgmat = cell(ntrials, nruns); %initialize cell array with dims ntrials x nruns
+
+for r = 1:nruns
+    for cat = 1:ncats
+        stimnums = randperm(144);
+        counter = 0;
+        for tri = 1:ntrials
+            if condmat(tri,r) == cat
+                counter = counter + 1;
+                imgmat{tri,r} = strcat(lower(cats{cat}(1:end-2)),'-',num2str(stimnums(counter)),'.jpg'); % assign unique image for each trial
+            else
+            end
+        end
+    end
+end
+
+disp(imgmat)
+
+% Path to the directory containing image files
+stim_directory = fullfile('/Users', 'ctyagi', 'Desktop', 'bbfloc_2.0', 'stimuli',  'baseline_gray');
+
+
+
+%% %%%%%%%%%%%%%%%%%%%%%%%%%%
+% GENERATE CSV containing blocks 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+imgmat;
+stim_type = 'image';
+for r = 1:nruns
+    run_number = r;
+    csvfilename = fullfile(participant_folder, strcat('static_blocks.csv'));
+    fid = fopen(csvfilename, 'w');
+    if fid == -1
+        error('Failed to open file: %s', csvfilename);
+    end
+    fprintf(fid, 'Block #,Onset-time(s),Category,TaskMatch,Stim Name,Stim Path,Stim Type,Stim Dur\n');
+
+    onset_time = 0; 
+    current_block = 1; 
+
+    % Iterate over each trial in ntrials
+    for i = 1:ntrials
+
+        % Write the stimulus block (from img_mat)
+        img_name = imgmat{i, r};
+        img_path = fullfile(stim_directory, img_name);
+
+        fprintf(fid, '%i,%f,%i,%s,%s,%s,%s,%f\n', ...
+            current_block,... % write trial block
+            onset_time,... % write trial onset time
+            condmat(i, r),... % write trial condition,
+            cats{condmat(i, r)},... % write stimulus category
+            img_name, ... % write image file name
+            img_path, ... % % write full image path
+            stim_type, ... %write stim type
+            stimdur);
+        % Check if the next trial belongs to a different category
+        if i < ntrials && condmat(i, r) ~= condmat(i + 1, r) 
+            
+            current_block = current_block + 1;
+            
+        end
+    end     
+    current_block = current_block + 1;
+end
+
+    % Loop through trials
+    for tri = 1:ntrials 
+        original_category_index = condmat(tri, r);
+        mapped_category_index = category_mapping(original_category_index); 
+        vid_name = stimmat{tri, r};
+        stim_path = fullfile(stim_dir, vid_name);
+        
+        % Determine if the current trial is the last in the block
+        if mod(tri,2) == 0
+            % Reduce the duration of the last trial by 0.0002 seconds
+            fprintf(fid, '%i,%f,%i,%s,%s,%s,%s,%f\n', ...
+                current_block, onset_time, mapped_category_index, cats{original_category_index}, vid_name, stim_path, stim_type, viddur);
+                if mod(current_block, 7) ~= 0
+                    current_block = current_block + 3;
+                else 
+                    current_block = current_block + 2; 
+                end
+         else
+            fprintf(fid, '%i,%f,%i,%s,%s,%s,%s,%f\n', ...
+                current_block, onset_time, mapped_category_index, cats{original_category_index}, vid_name, stim_path, stim_type, viddur);
+        end
+    end
+
+    % Write closing baseline block
+    current_block = current_block + 1;
+end
