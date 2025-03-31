@@ -1,11 +1,11 @@
-function make_baseline_blocks(participant, run)
+function make_baseline_blocks(participant, user, run)
 %%%%%%%%%%%%%%%%%%%%%%%%%
 % EXPERIMENTAL PARAMETERS
 %%%%%%%%%%%%%%%%%%%%%%%%%
-participant_folder = fullfile('/Users', 'ctyagi', 'Desktop', 'bbfloc_4.0', 'psychopy', 'data', participant);
+participant_folder = fullfile('/Users', user, 'Desktop', 'bbfloc_4.0', 'psychopy', 'data', participant);
 
 % Path to the directory containing image files
-stim_dir = fullfile('/Users', 'ctyagi', 'Desktop', 'bbfloc_4.0', 'stimuli',  'static_floc');
+stim_dir = fullfile('/Users', user, 'Desktop', 'bbfloc_4.0', 'stimuli',  'static_floc');
 
 % Stimulus categories 
 cats = {'blank'};
@@ -25,7 +25,7 @@ ntrials = nblocks*stimsperblock; % number of trials in a run
 blockdur = stimsperblock*stimdur; % block duration (sec)
 rundur = nblocks*blockdur; % run duration (sec)
 
-participant_folder = fullfile('/Users', 'ctyagi', 'Desktop', 'bbfloc_4.0', 'psychopy', 'data', participant);
+participant_folder = fullfile('/Users', user, 'Desktop', 'bbfloc_4.0', 'psychopy', 'data', participant);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % GENERATE STIMULUS SEQUENCES
