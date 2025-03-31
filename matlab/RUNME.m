@@ -1,9 +1,10 @@
-function RUNME(participant, run)
+function RUNME(participant, user, run)
 %% Run this function to generate 1 unique bbfloc run containing blocks of Heather Kosakowski's stimuli and static floc
 %% with 3 reps per category
 
 %% INPUT:
 % participant's initials/number as string i.e. ('BR') 
+% user: user of the laptop, use whoami to figure this out
 % run: run you're generating as integer (ie.: 1, 2, 3)
 
 %% OUTPUT:
@@ -13,10 +14,10 @@ function RUNME(participant, run)
 
 %% Generates participant's combinedData folder if doesn't exist yet
 
-addpath(fullfile('/Users', 'ctyagi', 'Desktop', 'bbfloc_4.0', 'matlab', 'functions'));
-addpath(fullfile('/Users', 'ctyagi', 'Desktop', 'bbfloc_4.0', 'matlab'));
+addpath(fullfile('/Users', user, 'Desktop', 'bbfloc_4.0', 'matlab', 'functions'));
+addpath(fullfile('/Users', user, 'Desktop', 'bbfloc_4.0', 'matlab'));
 
-participant_folder = fullfile('/Users', 'ctyagi', 'Desktop', 'bbfloc_4.0', 'psychopy', 'data', participant);
+participant_folder = fullfile('/Users', user, 'Desktop', 'bbfloc_4.0', 'psychopy', 'data', participant);
 
 % Check if the folder doesn't already exist
 if ~exist(participant_folder, 'dir')
