@@ -1,10 +1,10 @@
-function generateparfile(participant,run)
+function generateparfile(participant, user, run)
 %% generates parfile from the CSV 
 % single 16s block will be split into two 8s blocks for mrVista
 % compatibilty
 
 % Participant folder and file paths
-participant_folder = fullfile('/Users', 'ctyagi', 'Desktop', 'bbfloc_4.0', 'psychopy', 'data', participant);
+participant_folder = fullfile('/Users', user, 'Desktop', 'bbfloc_4.0', 'psychopy', 'data', participant);
 
 % Step 7: Save the result to a new CSV file
 csvFile = fullfile(participant_folder, strcat('run', num2str(run), '.csv'));
