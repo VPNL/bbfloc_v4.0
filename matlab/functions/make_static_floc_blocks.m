@@ -1,4 +1,4 @@
-function make_static_floc_blocks(participant, run)
+function make_static_floc_blocks(participant, user, run)
 %% Generates blocks for Stigliani's static fLoc; 3 reps per category 
 % thirty-two stimuli per block, presented for 0.5 seconds each = 16s blocks
 
@@ -36,7 +36,7 @@ ntrials = nblocks*stimsperblock; % number of trials in a run
 blockdur = stimsperblock*stimdur; % block duration (sec)
 rundur = nblocks*blockdur; % run duration (sec)
 
-participant_folder = fullfile('/Users', 'ctyagi', 'Desktop', 'bbfloc_4.0', 'psychopy', 'data', participant);
+participant_folder = fullfile('/Users', user, 'Desktop', 'bbfloc_4.0', 'psychopy', 'data', participant);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % GENERATE STIMULUS SEQUENCES
@@ -87,7 +87,7 @@ end
 disp(imgmat)
 
 % Path to the directory containing image files
-stim_directory = fullfile('/Users', 'ctyagi', 'Desktop', 'bbfloc_4.0', 'stimuli',  'static_floc');
+stim_directory = fullfile('/Users', user, 'Desktop', 'bbfloc_4.0', 'stimuli',  'static_floc');
 
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%
 % GENERATE CSV containing static blocks 
