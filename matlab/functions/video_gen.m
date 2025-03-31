@@ -1,8 +1,8 @@
-function video_gen(participant, run)
+function video_gen(participant, user, run)
 % compiles all the stimuli in the participant's csv for the run and writes the stimuli
 % to a video object - saves video object in participant's data folder
     % Participant folder and file paths
-    participant_folder = fullfile('/Users', 'ctyagi', 'Desktop', 'bbfloc_4.0', 'psychopy', 'data', participant);
+    participant_folder = fullfile('/Users', user, 'Desktop', 'bbfloc_4.0', 'psychopy', 'data', participant);
 
     % Specify the path to your CSV file
     csvFile = fullfile(participant_folder, strcat('run', num2str(run), '.csv'));
