@@ -1,9 +1,9 @@
-function makeorder_CSV_new(participant, run)
+function makeorder_CSV_new(participant, user, run)
 
 %% Generates the CSV for this run by compiling the blocks generated into one CSV and shuffling them to prevent consecutive category presentations
 
 % Participant folder and file paths
-participant_folder = fullfile('/Users', 'ctyagi', 'Desktop', 'bbfloc_4.0', 'psychopy', 'data', participant);
+participant_folder = fullfile('/Users', user, 'Desktop', 'bbfloc_4.0', 'psychopy', 'data', participant);
 
 csvfile1 = fullfile(participant_folder, strcat('static_blocks_run', num2str(run), '.csv')); 
 csvfile2 = fullfile(participant_folder, strcat('kosakowski_blocks_run', num2str(run), '.csv')); 
