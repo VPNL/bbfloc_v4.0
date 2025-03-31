@@ -1,4 +1,4 @@
-function make_kosakowski_blocks(participant, run)
+function make_kosakowski_blocks(participant, user, run)
 %% Generates blocks for Kosawkowskis's natural stimuli; 3 reps per category 
 % six stimuli per block, presented for 2.667 seconds each = 16 second
 % blocks
@@ -19,8 +19,8 @@ function make_kosakowski_blocks(participant, run)
 %%%%%%%%%%%%%%%%%%%%%%%%%
 % EXPERIMENTAL PARAMETERS
 %%%%%%%%%%%%%%%%%%%%%%%%%
-participant_folder = fullfile('/Users', 'ctyagi', 'Desktop', 'bbfloc_4.0', 'psychopy', 'data', participant);
-stim_dir = fullfile('/Users', 'ctyagi', 'Desktop', 'bbfloc_4.0', 'stimuli', 'saxestim_wfixation_grouped');
+participant_folder = fullfile('/Users', user, 'Desktop', 'bbfloc_4.0', 'psychopy', 'data', participant);
+stim_dir = fullfile('/Users', user, 'Desktop', 'bbfloc_4.0', 'stimuli', 'saxestim_wfixation_grouped');
 
 % Stimulus categories 
 cats = {'Faces-D', 'Limbs-D', 'Objects-D', 'Scenes-D'};
@@ -45,7 +45,7 @@ exp = 'bbfloc_4.0';
 
 % Get user input and concatenate it into the file path
 
-participant_folder = fullfile('/Users', 'ctyagi', 'Desktop', 'bbfloc_4.0', 'psychopy', 'data', participant);
+participant_folder = fullfile('/Users', user, 'Desktop', 'bbfloc_4.0', 'psychopy', 'data', participant);
 
 % Create matrix for Block #
 blockmat = zeros(ntrials,nruns);
